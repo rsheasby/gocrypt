@@ -1,0 +1,22 @@
+syntax = "proto3";
+package gocrypt;
+
+option go_package = ".;protocol";
+
+message Request {
+	enum RequestType {
+		HASHPASSWORD = 0;
+		VERIFYPASSWORD = 1;
+		VERIFYPASSWORDANDREHASH = 2;
+	}
+	RequestType request_type = 1;
+	string response_key = 2;
+	bytes password = 3;
+	string hash = 4;
+	int32 cost = 5;
+}
+
+message Response {
+	bool is_valid = 1;
+	string hash = 2;
+}
