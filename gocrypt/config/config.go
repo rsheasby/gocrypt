@@ -16,6 +16,8 @@ const (
 	ResponseKeyPrefix = "gocrypt:Response:"
 	// ErrorRetryTime specifies how long to wait before retrying when there's a redis read error.
 	ErrorRetryTime = 1 * time.Second
+	// ConnectionTimeout specifies the timeout for the redis connection. Must be longer than the PopTimeout.
+	ConnectionTimeout = 60 * time.Second
 	// PopTimeout specifies the connection timeout for the blocking queue pop. This could be arbitrarily long, but you
 	// have to set a limit so I reckon 10 seconds is reaonable.
 	PopTimeout = 10

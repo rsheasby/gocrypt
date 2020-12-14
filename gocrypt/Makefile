@@ -1,7 +1,51 @@
-BUILD_FLAGS = 
+DEV_REDIS_HOST = "127.0.0.1:6379"
+
+OUTPUT_FILE = gocrypt
+
+DEV_BUILD_FLAGS =
+RELEASE_BUILD_FLAGS = -ldflags "-s -w" -tags release
+GLOBAL_BUILD_FLAGS = -o $(OUTPUT_FILE)
+
+TEST_FLAGS = -v -race
+TEST_TARGET = ./...
+
+LINT_FLAGS = -E gosec -E gofmt --timeout 5m
+
+TESTCOVERAGE_FILE = testcoverage.out
+TESTCOVERAGE_FLAGS = $(RELEASE_BUILD_FLAGS) $(TEST_FLAGS) -cover -coverprofile $(TESTCOVERAGE_FILE) $(TEST_TARGET)
 
 build:
-	go build $(BUILD_FLAGS)
+	go build $(DEV_BUILD_FLAGS) $(GLOBAL_BUILD_FLAGS)
+
+build-release:
+	go build $(RELEASE_BUILD_FLAGS) $(GLOBAL_BUILD_FLAGS)
+
+build-docker-release:
+	docker run --rm -v `pwd`:/app -w /app golang:latest make build-release
+
+build-image:
+	docker image build -t $(OUTPUT_FILE):`date -u +"%Y-%m-%d"`-`git rev-parse --short HEAD` .
+
+test:
+	go test $(DEV_BUILD_FLAGS) $(TEST_FLAGS) $(TEST_TARGET)
+
+test-release:
+	go test $(RELEASE_BUILD_FLAGS) $(TEST_FLAGS) $(TEST_TARGET)
+
+test-coverage:
+	go test $(TESTCOVERAGE_FLAGS)
+
+# To see test coverage:
+# go get golang.org/x/tools/cmd/cover
+show-coverage: test-coverage
+	go tool cover -html=$(TESTCOVERAGE_FILE)
+
+lint:
+	golangci-lint run $(LINT_FLAGS)
+
+fulltest: build build-release test test-release lint
 
 run:
+	REDIS_HOST=$(DEV_REDIS_HOST) \
 	go run .
+
