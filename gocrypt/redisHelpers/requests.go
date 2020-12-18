@@ -26,12 +26,12 @@ func GetRequest(ctx context.Context, pool connGetter, logger *log.Logger) (reque
 			continue
 		}
 		if err != nil {
-			log.Println(err)
+			logger.Println(err)
 			time.Sleep(config.ErrorRetryTime)
 			continue
 		}
 		if len(result) != 2 {
-			log.Printf("Invalid request from Redis. Expected two strings but received %d.", len(result))
+			logger.Printf("Invalid request from Redis. Expected two strings but received %d.", len(result))
 			continue
 		}
 
