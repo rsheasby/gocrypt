@@ -8,7 +8,7 @@ import (
 	"github.com/davecgh/go-spew/spew"
 	"github.com/gomodule/redigo/redis"
 	"github.com/rsheasby/gocrypt/gocrypt/config"
-	"github.com/rsheasby/gocrypt/gocrypt/redisHelpers"
+	"github.com/rsheasby/gocrypt/gocrypt/requestManager"
 )
 
 func main() {
@@ -42,8 +42,11 @@ func main() {
 	if _, err := testConn.Do("PING"); err != nil {
 		log.Fatalf("Redis connection not properly established: %v", err)
 	}
-	testConn.Close()
+	_ = testConn.Close()
 	log.Println("Redis Connection Established.")
 
-	spew.Dump(redisHelpers.GetRequest(context.Background(), pool, logger))
+	requestChan := requestManager.Start(context.Background(), pool, logger)
+	for req := range requestChan{
+		spew.Dump(req)
+	}
 }
