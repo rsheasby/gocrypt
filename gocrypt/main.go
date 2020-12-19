@@ -34,19 +34,11 @@ func main() {
 		},
 	}
 
-	// Test redis connection
-	testConn := pool.Get()
-	if err := testConn.Err(); err != nil {
-		log.Fatalf("Unable to open Redis connection: %v", err)
-	}
-	if _, err := testConn.Do("PING"); err != nil {
-		log.Fatalf("Redis connection not properly established: %v", err)
-	}
-	_ = testConn.Close()
-	log.Println("Redis Connection Established.")
-
+	// Open request manager. This exits the program if it's unable to connect to redis.
 	requestChan := requestManager.Start(context.Background(), pool, logger)
-	for req := range requestChan{
+	logger.Print("gocrypt agent started, and Redis connection successfully opened.")
+
+	for req := range requestChan {
 		spew.Dump(req)
 	}
 }
