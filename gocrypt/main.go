@@ -5,10 +5,10 @@ import (
 	"log"
 	"os"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/gomodule/redigo/redis"
 	"github.com/rsheasby/gocrypt/gocrypt/config"
 	"github.com/rsheasby/gocrypt/gocrypt/requestManager"
+	"github.com/rsheasby/gocrypt/gocrypt/requestWorker"
 )
 
 func main() {
@@ -36,9 +36,11 @@ func main() {
 
 	// Open request manager. This exits the program if it's unable to connect to redis.
 	requestChan := requestManager.Start(context.Background(), pool, logger)
-	logger.Print("gocrypt agent started, and Redis connection successfully opened.")
+	logger.Printf("gocrypt agent started, and Redis connection successfully opened to %s.", config.RedisHost)
 
-	for req := range requestChan {
-		spew.Dump(req)
-	}
+	// Open request workers.
+	requestWorker.StartMany(context.Background(), requestChan, pool, config.Threads, logger)
+
+	// Let them do their work. If there's a fatal error, they will terminate the process.
+	select {}
 }
