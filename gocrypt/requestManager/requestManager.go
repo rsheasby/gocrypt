@@ -11,7 +11,7 @@ import (
 
 // Start starts the request manager, which pulls requests from redis, validates them, and puts them into the result channel.
 func Start(ctx context.Context, pool *redis.Pool, logger *log.Logger) (results chan *protocol.Request) {
-	results = make(chan *protocol.Request)
+	results = make(chan *protocol.Request, 1)
 
 	// Test redis connection before going into the request loop
 	conn := pool.Get()
@@ -32,6 +32,10 @@ func Start(ctx context.Context, pool *redis.Pool, logger *log.Logger) (results c
 			}
 			if err := validateRequest(req); err != nil {
 				logger.Printf("Invalid request received: %v", err)
+				continue
+			}
+			if lateness := redisHelpers.GetRedisTime(pool) - req.ExpiryTimestamp; lateness > 0 {
+				logger.Printf(`Expired request received with response key "%s". It was %d seconds late.`, req.ResponseKey, lateness)
 				continue
 			}
 			results <- req
