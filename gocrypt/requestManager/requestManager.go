@@ -9,6 +9,7 @@ import (
 	"github.com/rsheasby/gocrypt/protocol"
 )
 
+// Start starts the request manager, which pulls requests from redis, validates them, and puts them into the result channel.
 func Start(ctx context.Context, pool *redis.Pool, logger *log.Logger) (results chan *protocol.Request) {
 	results = make(chan *protocol.Request)
 
@@ -27,6 +28,10 @@ func Start(ctx context.Context, pool *redis.Pool, logger *log.Logger) (results c
 			}
 			req, err := redisHelpers.GetRequest(ctx, pool, logger)
 			if err != nil {
+				continue
+			}
+			if err := validateRequest(req); err != nil {
+				logger.Printf("Invalid request received: %v", err)
 				continue
 			}
 			results <- req
