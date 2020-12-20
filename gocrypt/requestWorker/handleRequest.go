@@ -27,6 +27,15 @@ func handleHashRequest(req *protocol.Request, pool *redis.Pool, logger *log.Logg
 	redisHelpers.PublishResponse(res, req.ResponseKey, pool, logger)
 }
 
-func handleValidateRequest(request *protocol.Request, pool *redis.Pool, logger *log.Logger) {
-	logger.Println("Not implemented") // TODO: implement me
+func handleValidateRequest(req *protocol.Request, pool *redis.Pool, logger *log.Logger) {
+	isValid, err := passwordHelpers.ValidatePassword(req.Password, req.Hash)
+	if err != nil {
+		logger.Printf("Error when validating password: %v", err)
+		return
+	}
+
+	res := &protocol.Response{
+		IsValid: isValid,
+	}
+	redisHelpers.PublishResponse(res, req.ResponseKey, pool, logger)
 }
