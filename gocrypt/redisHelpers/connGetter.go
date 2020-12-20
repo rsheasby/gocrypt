@@ -2,7 +2,7 @@ package redisHelpers
 
 import "github.com/gomodule/redigo/redis"
 
-type connGetter interface {
+type ConnGetter interface {
 	// Get returns a redis connection instance.
 	Get() redis.Conn
 }

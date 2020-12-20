@@ -12,7 +12,7 @@ import (
 )
 
 // GetRequest retrieves a hash request from redis. If no requests are currently in the queue, it blocks until one is available.
-func GetRequest(ctx context.Context, pool connGetter, logger *log.Logger) (request *protocol.Request, err error) {
+func GetRequest(ctx context.Context, pool ConnGetter, logger *log.Logger) (request *protocol.Request, err error) {
 	// Continuously pop a request off one of the queues, retrying if IO timeout
 	conn := pool.Get()
 	defer conn.Close()

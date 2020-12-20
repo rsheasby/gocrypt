@@ -5,7 +5,7 @@ import (
 )
 
 // GetRedisTime returns the redis server's current timestamp
-func GetRedisTime(pool *redis.Pool) (timestamp int64) {
+func GetRedisTime(pool ConnGetter) (timestamp int64) {
 	conn := pool.Get()
 	defer conn.Close()
 
