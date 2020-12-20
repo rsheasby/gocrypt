@@ -9,14 +9,15 @@ import (
 )
 
 // Start starts the request manager, which pulls requests from redis, validates them, and puts them into the result channel.
-func Start(ctx context.Context, pool redisHelpers.ConnGetter, logger *log.Logger) (results chan *protocol.Request) {
+func Start(ctx context.Context, pool redisHelpers.ConnGetter, logger *log.Logger) (results chan *protocol.Request, err error) {
 	results = make(chan *protocol.Request, 1)
 
 	// Test redis connection before going into the request loop
 	conn := pool.Get()
-	_, err := conn.Do("PING")
+	_, err = conn.Do("PING")
 	if err != nil {
-		logger.Fatalf("Failed to open test connection from request manager: %v", err)
+		logger.Printf("Failed to open test connection from request manager: %v", err)
+		return nil, err
 	}
 	_ = conn.Close()
 

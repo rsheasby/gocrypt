@@ -35,7 +35,10 @@ func main() {
 	}
 
 	// Open request manager. This exits the program if it's unable to connect to redis.
-	requestChan := requestManager.Start(context.Background(), pool, logger)
+	requestChan, err := requestManager.Start(context.Background(), pool, logger)
+	if err != nil {
+		logger.Fatalf("Couldn't start up request manager: %v", err)
+	}
 	logger.Printf("gocrypt agent started, and Redis connection successfully opened to %s.", config.RedisHost)
 
 	// Open request workers.
