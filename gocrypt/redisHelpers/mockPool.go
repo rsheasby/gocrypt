@@ -5,18 +5,18 @@ import (
 	"github.com/rafaeljusto/redigomock"
 )
 
-type mockPool struct {
-	conn *redigomock.Conn
+type MockPool struct {
+	Conn *redigomock.Conn
 }
 
-func newMockPool() (mp *mockPool) {
-	mp = &mockPool{
-		conn: redigomock.NewConn(),
+func NewMockPool() (mp *MockPool) {
+	mp = &MockPool{
+		Conn: redigomock.NewConn(),
 	}
 	return
 }
 
 // Get returns a redis connection instance.
-func (mp *mockPool) Get() (conn redis.Conn) {
-	return mp.conn
+func (mp *MockPool) Get() (conn redis.Conn) {
+	return mp.Conn
 }
