@@ -16,7 +16,6 @@ func Start(ctx context.Context, pool redisHelpers.ConnGetter, logger *log.Logger
 	conn := pool.Get()
 	_, err = conn.Do("PING")
 	if err != nil {
-		logger.Printf("Failed to open test connection from request manager: %v", err)
 		return nil, err
 	}
 	_ = conn.Close()
@@ -24,13 +23,15 @@ func Start(ctx context.Context, pool redisHelpers.ConnGetter, logger *log.Logger
 	go func() {
 		for {
 			if ctx.Err() != nil {
+				close(results)
 				return
 			}
 			req, err := redisHelpers.GetRequest(ctx, pool, logger)
 			if err != nil {
 				continue
 			}
-			if err := validateRequest(req); err != nil {
+			err = validateRequest(req)
+			if err != nil {
 				logger.Printf("Invalid request received: %v", err)
 				continue
 			}
