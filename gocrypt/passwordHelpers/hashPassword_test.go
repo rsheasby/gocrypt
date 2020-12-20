@@ -3,30 +3,24 @@ package passwordHelpers
 import (
 	"testing"
 
-	"github.com/matryer/is"
+	"github.com/stretchr/testify/assert"
 	"golang.org/x/crypto/bcrypt"
 )
 
 func TestHashPasswordShouldSucceedForValidCost(t *testing.T) {
-	is := is.New(t)
-
 	pwd := []byte("password")
 	cost := 10
 	hash := HashPassword([]byte(pwd), cost)
 	err := bcrypt.CompareHashAndPassword([]byte(hash), pwd)
 
-	is.NoErr(err) // Hash and password should validate
+	assert.NoError(t, err, "Generated hash should validate correctly")
 }
 
 // The reason for panicking with invalid cost is that it should be caught by the validation function in real operation.
 func TestHashShouldPanicWithAboveMaxCost(t *testing.T) {
-	is := is.New(t)
-
 	defer func() {
 		err := recover()
-		if err == nil {
-			is.Fail() // This should panic with an error if the cost is too high.
-		}
+		assert.NotNil(t, err, "Hashing with above max cost should panic with an error")
 	}()
 
 	pwd := []byte("password")
