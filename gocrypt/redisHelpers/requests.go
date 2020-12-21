@@ -21,25 +21,26 @@ func GetRequest(ctx context.Context, pool ConnGetter, logger *log.Logger) (reque
 		if ctx.Err() != nil {
 			return
 		}
-		result, err := redis.Strings(conn.Do("BRPOP", config.RequestQueueKey, config.PopTimeout))
+		result, err := redis.ByteSlices(conn.Do("BRPOP", config.RequestQueueKey, config.PopTimeout))
 		if err == redis.ErrNil {
 			continue
 		}
 		if err != nil {
-			logger.Println(err)
+			logger.Printf("Error receiving message from redis: %v", err)
 			time.Sleep(config.ErrorRetryTime)
 			return nil, err
 		}
+		// This should basically never happen. If there's no error, the response should always be 2 strings. Including this check just in case though.
 		if len(result) != 2 {
-			logger.Printf("Invalid request from Redis. Expected two strings but received %d.", len(result))
+			logger.Printf("Invalid response from Redis. Expected two strings but received %d.", len(result))
 			continue
 		}
 
 		// Unmarshal the request received from redis
 		request = &protocol.Request{}
-		err = proto.Unmarshal([]byte(result[1]), request)
+		err = proto.Unmarshal(result[1], request)
 		if err != nil {
-			logger.Printf("Invalid message received from redis: %s", err)
+			logger.Printf("Failed to unmarshall message from redis: %s", err)
 			continue
 		}
 		return request, err

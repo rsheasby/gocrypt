@@ -13,6 +13,7 @@ func GetRedisTime(pool ConnGetter) (timestamp int64) {
 	if err != nil {
 		return -1
 	}
+	// This should never happen, since any error should actually have err set. Even so, doesn't hurt to put it here for safety.
 	if len(timestamps) != 2 {
 		return -1
 	}
