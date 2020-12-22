@@ -9,7 +9,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/gomodule/redigo/redis"
 	"github.com/rsheasby/gocrypt/gocrypt/config"
 	"github.com/rsheasby/gocrypt/gocrypt/redisHelpers"
@@ -37,7 +36,7 @@ func TestRequestManagerShouldTestRedisConnection(t *testing.T) {
 
 	// PING error
 	pool = redisHelpers.NewMockPool()
-	pingCmd = pool.Conn.Command("PING").ExpectError(fmt.Errorf("redis connection error"))
+	pool.Conn.Command("PING").ExpectError(fmt.Errorf("redis connection error"))
 
 	ctx, cancel = context.WithCancel(context.Background())
 
@@ -64,9 +63,9 @@ func TestRequestManagerShouldRespectContextCancellation(t *testing.T) {
 	results, _ := Start(ctx, pool, logger)
 
 	select {
-	case _, open := <- results:
+	case _, open := <-results:
 		assert.False(t, open, "Channel should be closed after the context is cancelled.")
-	case <-time.After((config.PopTimeout+2)*time.Second):
+	case <-time.After((config.PopTimeout + 2) * time.Second):
 		assert.Fail(t, "Didn't receive a response within a reasonable time.")
 	}
 }
@@ -97,10 +96,10 @@ func TestRequestManagerShouldReturnValidRequestsWhileLoggingErrors(t *testing.T)
 			return nil, redis.ErrNil
 		}
 		return []interface{}{
-			[]byte(config.RequestQueueKey),
-			reqBytes,
-		},
-		nil
+				[]byte(config.RequestQueueKey),
+				reqBytes,
+			},
+			nil
 	})
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -114,10 +113,10 @@ func TestRequestManagerShouldReturnValidRequestsWhileLoggingErrors(t *testing.T)
 	assert.Nil(t, err, "No error should be returned when starting the request manager")
 
 	select {
-	case req2 := <- results:
+	case req2 := <-results:
 		// We need to compare the string values, as it fails otherwise due to the internal state differences.
 		assert.EqualValues(t, req.String(), req2.String(), "Received request should be equal to the submitted request.")
-	case <-time.After((config.PopTimeout+2)*time.Second):
+	case <-time.After((config.PopTimeout + 2) * time.Second):
 		assert.Fail(t, "Didn't receive a response within a reasonable time.")
 	}
 	assert.NotZero(t, logBuffer.Len(), "There should be logs confirming the error.")
@@ -145,14 +144,13 @@ func TestRequestManagerShouldValidateRequests(t *testing.T) {
 	assert.Nil(t, err, "No error should be returned when starting the request manager")
 
 	// This is pretty hacky, but I need to give the request manager enough time to actually receive the redis request.
-	time.Sleep(10*time.Millisecond)
+	time.Sleep(10 * time.Millisecond)
 	cancel()
 
 	select {
-	case res, ok := <- results:
-		spew.Dump(res)
+	case _, ok := <-results:
 		assert.False(t, ok, "No message should be published since the request is invalid.")
-	case <-time.After((config.PopTimeout+2)*time.Second):
+	case <-time.After((config.PopTimeout + 2) * time.Second):
 		assert.Fail(t, "Didn't receive a response within a reasonable time.")
 	}
 
@@ -187,14 +185,13 @@ func TestRequestManagerShouldCheckExpiryTime(t *testing.T) {
 	assert.Nil(t, err, "No error should be returned when starting the request manager")
 
 	// This is pretty hacky, but I need to give the request manager enough time to actually receive the redis request.
-	time.Sleep(10*time.Millisecond)
+	time.Sleep(10 * time.Millisecond)
 	cancel()
 
 	select {
-	case res, ok := <- results:
-		spew.Dump(res)
+	case _, ok := <-results:
 		assert.False(t, ok, "No message should be published since the request is invalid.")
-	case <-time.After((config.PopTimeout+2)*time.Second):
+	case <-time.After((config.PopTimeout + 2) * time.Second):
 		assert.Fail(t, "Didn't receive a response within a reasonable time.")
 	}
 

@@ -28,7 +28,7 @@ func TestRequestWorkerShouldHonorContextCancellation(t *testing.T) {
 	done := make(chan struct{})
 	go func() {
 		requestWorker(ctx, make(chan *protocol.Request), pool, logger)
-		done<-struct{}{}
+		done <- struct{}{}
 	}()
 
 	cancel()
@@ -72,7 +72,7 @@ func TestRequestWorkerShouldProcessHashRequestsAndPublishTheResultCorrectly(t *t
 		assert.Nil(t, bcrypt.CompareHashAndPassword([]byte(res.Hash), []byte("abc")), "Hash and password should validate")
 
 		defer func() {
-			doneChan<-struct{}{}
+			doneChan <- struct{}{}
 		}()
 		return int64(1), nil
 	})
@@ -98,7 +98,7 @@ func TestRequestWorkerShouldProcessHashRequestsAndPublishTheResultCorrectly(t *t
 	select {
 	case <-doneChan:
 		break
-	case <-time.After(10*time.Second):
+	case <-time.After(10 * time.Second):
 		assert.Fail(t, "Didn't receive a response within a reasonable time")
 	}
 
@@ -137,7 +137,7 @@ func TestRequestWorkerShouldProcessVerifyValidRequestsAndPublishTheResultCorrect
 		assert.True(t, res.IsValid, "Hash and password should validate")
 
 		defer func() {
-			doneChan<-struct{}{}
+			doneChan <- struct{}{}
 		}()
 		return int64(1), nil
 	})
@@ -156,14 +156,14 @@ func TestRequestWorkerShouldProcessVerifyValidRequestsAndPublishTheResultCorrect
 		RequestType:     protocol.Request_VERIFYPASSWORD,
 		ResponseKey:     "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
 		Password:        []byte("abc"),
-		Hash: "$2y$04$scoJ6DgfwqxqzQoTRdfvKOwQ1.aTPomv0rpoEub.FagPGAdvqW7Pa",
+		Hash:            "$2y$04$scoJ6DgfwqxqzQoTRdfvKOwQ1.aTPomv0rpoEub.FagPGAdvqW7Pa",
 		ExpiryTimestamp: math.MaxInt64,
 	}
 
 	select {
 	case <-doneChan:
 		break
-	case <-time.After(10*time.Second):
+	case <-time.After(10 * time.Second):
 		assert.Fail(t, "Didn't receive a response within a reasonable time")
 	}
 
@@ -202,7 +202,7 @@ func TestRequestWorkerShouldProcessVerifyInvalidRequestsAndPublishTheResultCorre
 		assert.False(t, res.IsValid, "Hash and password should validate")
 
 		defer func() {
-			doneChan<-struct{}{}
+			doneChan <- struct{}{}
 		}()
 		return int64(1), nil
 	})
@@ -221,14 +221,14 @@ func TestRequestWorkerShouldProcessVerifyInvalidRequestsAndPublishTheResultCorre
 		RequestType:     protocol.Request_VERIFYPASSWORD,
 		ResponseKey:     "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
 		Password:        []byte("Abc"),
-		Hash: "$2y$04$scoJ6DgfwqxqzQoTRdfvKOwQ1.aTPomv0rpoEub.FagPGAdvqW7Pa",
+		Hash:            "$2y$04$scoJ6DgfwqxqzQoTRdfvKOwQ1.aTPomv0rpoEub.FagPGAdvqW7Pa",
 		ExpiryTimestamp: math.MaxInt64,
 	}
 
 	select {
 	case <-doneChan:
 		break
-	case <-time.After(10*time.Second):
+	case <-time.After(10 * time.Second):
 		assert.Fail(t, "Didn't receive a response within a reasonable time")
 	}
 
@@ -246,7 +246,6 @@ func TestRequestWorkerShouldHandleVerifyRequestsWithInvalidHash(t *testing.T) {
 	})
 
 	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
 
 	logBuffer := &bytes.Buffer{}
 	logger := log.New(logBuffer, "", 0)
@@ -259,11 +258,12 @@ func TestRequestWorkerShouldHandleVerifyRequestsWithInvalidHash(t *testing.T) {
 		RequestType:     protocol.Request_VERIFYPASSWORD,
 		ResponseKey:     "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
 		Password:        []byte("Abc"),
-		Hash: "$2y",
+		Hash:            "$2y",
 		ExpiryTimestamp: math.MaxInt64,
 	}
 
-	time.Sleep(2*time.Second)
+	time.Sleep(2 * time.Second)
+	cancel()
 
 	assert.NotZero(t, logBuffer.Len(), "There should be some logs due to the simulated errors.")
 }
@@ -280,14 +280,17 @@ func TestRequestWorkerShouldAttemptToPublishTheCorrectAmountOfTimes(t *testing.T
 	})
 
 	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
 
 	logBuffer := &bytes.Buffer{}
 	logger := log.New(logBuffer, "", 0)
 
 	reqChan := make(chan *protocol.Request)
+	doneChan := make(chan struct{})
 
-	StartMany(ctx, reqChan, pool, 1, logger)
+	go func() {
+		requestWorker(ctx, reqChan, pool, logger)
+		doneChan <- struct{}{}
+	}()
 
 	reqChan <- &protocol.Request{
 		RequestType:     protocol.Request_HASHPASSWORD,
@@ -297,8 +300,13 @@ func TestRequestWorkerShouldAttemptToPublishTheCorrectAmountOfTimes(t *testing.T
 		ExpiryTimestamp: math.MaxInt64,
 	}
 
-	time.Sleep(config.PublishAttempts*config.ErrorRetryTime+(time.Millisecond*50))
+	cancel()
 
-	assert.NotZero(t, logBuffer.Len(), "There should be some logs due to the simulated errors.")
-	assert.Equal(t, config.PublishAttempts, attempts, "Didn't publish the correct amount of times.")
+	select {
+	case <-doneChan:
+		assert.NotZero(t, logBuffer.Len(), "There should be some logs due to the simulated errors.")
+		assert.Equal(t, config.PublishAttempts, attempts, "Didn't publish the correct amount of times.")
+	case <-time.After((config.PublishAttempts + 1) * config.ErrorRetryTime):
+		assert.Fail(t, "Didn't receive a response within a reasonable time.")
+	}
 }

@@ -26,7 +26,7 @@ func requestWorker(ctx context.Context, reqChan chan *protocol.Request, pool red
 		select {
 		case <-ctx.Done():
 			return
-		case req := <- reqChan:
+		case req := <-reqChan:
 			handleRequest(req, pool, logger)
 		}
 	}

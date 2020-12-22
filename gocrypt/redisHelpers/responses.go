@@ -11,7 +11,7 @@ import (
 )
 
 // PublishResponse publishes the provided response via redis, including automatic retry and responseKey concatenation with the prefix from the config package.
-func PublishResponse (res *protocol.Response, responseKey string, pool ConnGetter, logger *log.Logger) {
+func PublishResponse(res *protocol.Response, responseKey string, pool ConnGetter, logger *log.Logger) {
 	conn := pool.Get()
 	defer conn.Close()
 

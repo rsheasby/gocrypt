@@ -6,7 +6,7 @@ DEV_BUILD_FLAGS =
 RELEASE_BUILD_FLAGS = -ldflags "-s -w" -tags release
 GLOBAL_BUILD_FLAGS = -o $(OUTPUT_FILE)
 
-TEST_FLAGS = -v -race
+TEST_FLAGS = -v -race -count=1
 TEST_TARGET = ./...
 
 LINT_FLAGS = -E gosec -E gofmt --timeout 5m

@@ -25,7 +25,6 @@ const (
 	PublishAttempts = 5
 	// MinResponseKeyLength specifies the minimum length for the response key. 16 is a decent length to be relatively sure you won't have collisions, and is also the length of a UUID
 	MinResponseKeyLength = 16
-
 )
 
 var (
