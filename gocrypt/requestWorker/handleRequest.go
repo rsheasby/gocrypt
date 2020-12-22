@@ -23,7 +23,7 @@ func handleHashRequest(req *protocol.Request, pool redisHelpers.ConnGetter, logg
 	res := &protocol.Response{
 		Hash:    hash,
 	}
-	redisHelpers.PublishResponse(res, req.ResponseKey, pool, logger)
+	go redisHelpers.PublishResponse(res, req.ResponseKey, pool, logger)
 }
 
 func handleValidateRequest(req *protocol.Request, pool redisHelpers.ConnGetter, logger *log.Logger) {
@@ -36,5 +36,5 @@ func handleValidateRequest(req *protocol.Request, pool redisHelpers.ConnGetter, 
 	res := &protocol.Response{
 		IsValid: isValid,
 	}
-	redisHelpers.PublishResponse(res, req.ResponseKey, pool, logger)
+	go redisHelpers.PublishResponse(res, req.ResponseKey, pool, logger)
 }

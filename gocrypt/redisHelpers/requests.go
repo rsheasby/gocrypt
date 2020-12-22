@@ -39,6 +39,7 @@ func GetRequest(ctx context.Context, pool ConnGetter, logger *log.Logger) (reque
 		// Unmarshal the request received from redis
 		request = &protocol.Request{}
 		err = proto.Unmarshal(result[1], request)
+		// It's unclear how bad a message has to be for proto.Unmarshall to fail, but I'm unable to make it happen, so this doesn't have any test coverage.
 		if err != nil {
 			logger.Printf("Failed to unmarshall message from redis: %s", err)
 			continue

@@ -21,8 +21,8 @@ const (
 	// PopTimeout specifies the connection timeout for the blocking queue pop. This could be arbitrarily long, but you
 	// have to set a limit so I reckon 10 seconds is reasonable.
 	PopTimeout = 10
-	// PublishAttempts specifies the maximum amount of times that the response publish will be retried if something goes wrong.
-	PublishAttempts = 3
+	// PublishAttempts specifies the maximum amount of times that the response publish will be retried if something goes wrong. Some tests rely on this being at least 3, so it should always be 3 or more.
+	PublishAttempts = 5
 	// MinResponseKeyLength specifies the minimum length for the response key. 16 is a decent length to be relatively sure you won't have collisions, and is also the length of a UUID
 	MinResponseKeyLength = 16
 

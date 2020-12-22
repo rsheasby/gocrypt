@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/davecgh/go-spew/spew"
+	"github.com/gomodule/redigo/redis"
 	"github.com/rsheasby/gocrypt/gocrypt/config"
 	"github.com/rsheasby/gocrypt/gocrypt/redisHelpers"
 	"github.com/rsheasby/gocrypt/protocol"
@@ -85,10 +86,15 @@ func TestRequestManagerShouldReturnValidRequestsWhileLoggingErrors(t *testing.T)
 
 	// Confirm that it doesn't break when there's an error in one of the requests.
 	hasReturnedError := false
+	hasTimedout := false
 	pool.Conn.Command("BRPOP", config.RequestQueueKey, config.PopTimeout).Handle(func(args []interface{}) (interface{}, error) {
 		if !hasReturnedError {
 			hasReturnedError = true
 			return nil, fmt.Errorf("Random error")
+		}
+		if !hasTimedout {
+			hasTimedout = true
+			return nil, redis.ErrNil
 		}
 		return []interface{}{
 			[]byte(config.RequestQueueKey),

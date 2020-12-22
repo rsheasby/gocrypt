@@ -16,6 +16,7 @@ func PublishResponse (res *protocol.Response, responseKey string, pool ConnGette
 	defer conn.Close()
 
 	resBytes, err := proto.Marshal(res)
+	// This should never happen, but we'll check it for safety anyway
 	if err != nil {
 		logger.Printf(`Error publishing response "%s": Failed to marshall response: %v`, responseKey, err)
 		return
@@ -29,6 +30,7 @@ func PublishResponse (res *protocol.Response, responseKey string, pool ConnGette
 		}
 
 		receivedBy, err := redis.Int(result, nil)
+		// Ditto
 		if err != nil {
 			logger.Printf(`Error publishing response "%s": Failed to interpret redis response: %v`, responseKey, err)
 			return
