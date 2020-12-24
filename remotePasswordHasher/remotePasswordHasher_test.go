@@ -12,7 +12,7 @@ import (
 // The tests in this file are both unit tests and integration tests.
 // An active redis server on localhost:6379 is necessary, and a gocrypt agent needs to be running.
 
-func TestNewRemotePasswordHasherShouldReturnPasswordHasher(t *testing.T) {
+func TestNewRemotePasswordHasher(t *testing.T) {
 	cost := 10
 	pool := &redis.Pool{
 		Dial: func() (redis.Conn, error) {
@@ -33,7 +33,7 @@ func TestNewRemotePasswordHasherShouldReturnPasswordHasher(t *testing.T) {
 	assert.Nil(t, ph, "PasswordHasher shouldn't be returned when the specified cost is above the maximum")
 	assert.NotNil(t, err, "An error should be returned when the specified cost is above the maximum")
 
-	// Ensure it tests the pool connection
+	// Ensure it tests the pool connection properly
 	ph, err = NewRemotePasswordHasher(cost, nil)
 	assert.Nil(t, ph, "PasswordHasher shouldn't be returned when a nil pool is provided")
 	assert.NotNil(t, err, "An error should be returned when a nil pool is provided")
