@@ -16,14 +16,14 @@ func main() {
 	config.ReadEnvironment()
 
 	// Setup logger
-	var logger *log.Logger
-	if config.UTCLogging {
-		logger = log.New(os.Stderr, "gocrypt:",
-			log.Ldate|log.Ltime|log.Lmicroseconds|log.Llongfile|log.LUTC)
-	} else {
-		logger = log.New(os.Stderr, "gocrypt:",
-			log.Ldate|log.Ltime|log.Lmicroseconds|log.Llongfile)
+	logOptions := log.Ldate | log.Ltime | log.Lmicroseconds
+	if config.VerboseLogging {
+		logOptions |= log.Llongfile
 	}
+	if config.UTCLogging {
+		logOptions |= log.LUTC
+	}
+	logger := log.New(os.Stderr, "gocrypt:", logOptions)
 
 	// Setup redis pool
 	pool := &redis.Pool{

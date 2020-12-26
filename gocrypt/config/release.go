@@ -3,5 +3,6 @@
 package config
 
 const (
-	UTCLogging = true
+	VerboseLogging = false
+	UTCLogging     = true
 )
