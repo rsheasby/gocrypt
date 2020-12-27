@@ -10,29 +10,29 @@ import (
 
 func TestNewLocalPasswordHasherShouldReturnPasswordHasher(t *testing.T) {
 	cost := 10
-	ph, err := NewLocalPasswordHasher(cost)
+	ph, err := New(cost)
 
-	assert.Nil(t, err, "NewLocalPasswordHasher shouldn't return any errors")
+	assert.Nil(t, err, "New shouldn't return any errors")
 	assert.NotNil(t, ph, "NewLocalPasswordHelper shouldn't return nil")
 }
 
 func TestNewLocalPasswordHasherShouldPreventInvalidCosts(t *testing.T) {
 	cost := bcrypt.MinCost - 1
-	ph, err := NewLocalPasswordHasher(cost)
+	ph, err := New(cost)
 
-	assert.NotNil(t, err, "NewLocalPasswordHasher should return an error with a cost below the minimum.")
-	assert.Nil(t, ph, "NewLocalPasswordHasher shouldn't return an instance with a cost below the minimum.")
+	assert.NotNil(t, err, "New should return an error with a cost below the minimum.")
+	assert.Nil(t, ph, "New shouldn't return an instance with a cost below the minimum.")
 
 	cost = bcrypt.MaxCost + 1
-	ph, err = NewLocalPasswordHasher(cost)
+	ph, err = New(cost)
 
-	assert.NotNil(t, err, "NewLocalPasswordHasher should return an error with a cost above the maximum.")
-	assert.Nil(t, ph, "NewLocalPasswordHasher shouldn't return an instance with a cost above the maximum.")
+	assert.NotNil(t, err, "New should return an error with a cost above the maximum.")
+	assert.Nil(t, ph, "New shouldn't return an instance with a cost above the maximum.")
 }
 
 func TestPasswordHasherShouldHashPasswordsCorrectly(t *testing.T) {
 	cost := 10
-	ph, _ := NewLocalPasswordHasher(cost)
+	ph, _ := New(cost)
 
 	pwd := "abc"
 	hash, err := ph.HashPassword(pwd)
@@ -49,7 +49,7 @@ func TestPasswordHasherShouldHashPasswordsCorrectly(t *testing.T) {
 
 func TestPasswordHasherShouldValidatePasswordsCorrectly(t *testing.T) {
 	cost := 10
-	ph, _ := NewLocalPasswordHasher(cost)
+	ph, _ := New(cost)
 
 	pwd := "abc"
 	pwdSha := sha512.Sum512([]byte(pwd))

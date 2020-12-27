@@ -12,7 +12,7 @@ type localPasswordHasher struct {
 	cost int
 }
 
-func NewLocalPasswordHasher(cost int) (lph gocrypt.PasswordHasher, err error) {
+func New(cost int) (lph gocrypt.PasswordHasher, err error) {
 	if cost < bcrypt.MinCost || cost > bcrypt.MaxCost {
 		return gocrypt.PasswordHasher(nil), fmt.Errorf(`cost %d is invalid - cost must be between %d and %d`, cost, bcrypt.MinCost, bcrypt.MaxCost)
 	}

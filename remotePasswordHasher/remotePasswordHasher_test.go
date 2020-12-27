@@ -19,22 +19,22 @@ func TestNewRemotePasswordHasher(t *testing.T) {
 			return redis.Dial("tcp", "localhost:6379")
 		},
 	}
-	ph, err := NewRemotePasswordHasher(cost, pool)
+	ph, err := New(cost, pool)
 
 	assert.NotNil(t, ph, "Returned PasswordHasher shouldn't be nil")
 	assert.Nil(t, err, "No error should be returned when the PasswordHasher was successfully created")
 
 	// Ensure it validates the cost
-	ph, err = NewRemotePasswordHasher(bcrypt.MinCost-1, pool)
+	ph, err = New(bcrypt.MinCost-1, pool)
 	assert.Nil(t, ph, "PasswordHasher shouldn't be returned when the specified cost is below the minimum")
 	assert.NotNil(t, err, "An error should be returned when the specified cost is below the minimum")
 
-	ph, err = NewRemotePasswordHasher(bcrypt.MaxCost+1, pool)
+	ph, err = New(bcrypt.MaxCost+1, pool)
 	assert.Nil(t, ph, "PasswordHasher shouldn't be returned when the specified cost is above the maximum")
 	assert.NotNil(t, err, "An error should be returned when the specified cost is above the maximum")
 
 	// Ensure it tests the pool connection properly
-	ph, err = NewRemotePasswordHasher(cost, nil)
+	ph, err = New(cost, nil)
 	assert.Nil(t, ph, "PasswordHasher shouldn't be returned when a nil pool is provided")
 	assert.NotNil(t, err, "An error should be returned when a nil pool is provided")
 
@@ -43,7 +43,7 @@ func TestNewRemotePasswordHasher(t *testing.T) {
 			return nil, fmt.Errorf("no connection for you")
 		},
 	}
-	ph, err = NewRemotePasswordHasher(cost, nilConnPool)
+	ph, err = New(cost, nilConnPool)
 	assert.Nil(t, ph, "PasswordHasher shouldn't be returned when a connection can't be established")
 	assert.NotNil(t, err, "An error should be returned when a connection can't be established")
 
@@ -52,7 +52,7 @@ func TestNewRemotePasswordHasher(t *testing.T) {
 			return redis.Dial("tcp", "")
 		},
 	}
-	ph, err = NewRemotePasswordHasher(cost, badHostPool)
+	ph, err = New(cost, badHostPool)
 	assert.Nil(t, ph, "PasswordHasher shouldn't be returned when a connection can't be established")
 	assert.NotNil(t, err, "An error should be returned when a connection can't be established")
 }
