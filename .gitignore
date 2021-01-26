@@ -14,3 +14,9 @@
 # Dependency directories (remove the comment below to include it)
 # vendor/
 .idea
+
+# Any certificate files, like those that you may generate for use with redis
+**/*.pem
+
+# Any redis database files
+**/*.rdb

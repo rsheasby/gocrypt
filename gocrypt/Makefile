@@ -1,4 +1,4 @@
-DEV_REDIS_HOST = "127.0.0.1:6379"
+DEV_REDIS_HOST = "localhost:6379"
 
 OUTPUT_FILE = gocrypt
 
@@ -47,5 +47,6 @@ fulltest: build build-release test test-release lint
 
 run:
 	REDIS_HOST=$(DEV_REDIS_HOST) \
+	REDIS_TLS= \
 	go run .
 

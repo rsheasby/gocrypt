@@ -30,6 +30,8 @@ const (
 var (
 	// RedisHost specifies the host and port for the redis server.
 	RedisHost string
+	// RedisTLS specifies if the redis connection should use TLS.
+	RedisTLS bool
 	// Threads specifies how many worker threads should be started.
 	Threads int
 )
@@ -44,6 +46,11 @@ func ReadEnvironment() {
 	RedisHost = os.Getenv("REDIS_HOST")
 	if RedisHost == "" {
 		log.Fatalln(`No Redis host specified. Environment variable "REDIS_HOST" should be set.`)
+	}
+
+	_, RedisTLS = os.LookupEnv("REDIS_TLS")
+	if !RedisTLS {
+		log.Println("Warning: TLS not enabled. Remember to configure and use TLS for any production deployments!")
 	}
 
 	Threads = runtime.NumCPU()
