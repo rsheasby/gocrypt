@@ -1,22 +1,26 @@
 package redisHelpers
 
 import (
+	"fmt"
+	"time"
+
 	"github.com/gomodule/redigo/redis"
 )
 
 // GetRedisTime returns the redis server's current timestamp
-func GetRedisTime(pool ConnGetter) (timestamp int64) {
+func GetRedisTime(pool ConnGetter) (redisTime time.Time, err error) {
 	conn := pool.Get()
 	defer conn.Close()
 
 	timestamps, err := redis.Int64s(conn.Do("TIME"))
 	if err != nil {
-		return -1
-	}
-	// This should never happen, since any error should actually have err set. Even so, doesn't hurt to put it here for safety.
-	if len(timestamps) != 2 {
-		return -1
+		return time.Time{}, fmt.Errorf("couldn't receive timestamp from redis: %v", err)
 	}
 
-	return timestamps[0]
+	// Should never happen, but may as well check for it just in case
+	if len(timestamps) != 2 {
+		return time.Time{}, fmt.Errorf("couldn't receive timestamp from redis - invalid response")
+	}
+
+	return time.Unix(timestamps[0], timestamps[1]), nil
 }

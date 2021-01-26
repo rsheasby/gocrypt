@@ -3,6 +3,7 @@ package requestManager
 import (
 	"context"
 	"log"
+	"time"
 
 	"github.com/rsheasby/gocrypt/gocrypt/redisHelpers"
 	"github.com/rsheasby/gocrypt/protocol"
@@ -35,8 +36,12 @@ func Start(ctx context.Context, pool redisHelpers.ConnGetter, logger *log.Logger
 				logger.Printf("Invalid request received: %v", err)
 				continue
 			}
-			if lateness := redisHelpers.GetRedisTime(pool) - req.ExpiryTimestamp; lateness > 0 {
-				logger.Printf(`Expired request received with response key "%s". It was %d seconds late.`, req.ResponseKey, lateness)
+			expiryTime := time.Unix(0, req.ExpiryTimestamp)
+			redisTime, _ := redisHelpers.GetRedisTime(pool)
+			lateness := float64(redisTime.UnixNano()-expiryTime.UnixNano()) / 1000000000
+			if lateness > 0 {
+				logger.Printf(`Expired request received with response key "%s". It was %1.3f seconds late.`,
+					req.ResponseKey, lateness)
 				continue
 			}
 			results <- req
