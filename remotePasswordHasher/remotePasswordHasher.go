@@ -163,5 +163,29 @@ func (r RemotePasswordHasher) HashPassword(password string) (hash string, err er
 }
 
 func (r RemotePasswordHasher) ValidatePassword(password string, hash string) (isValid bool, err error) {
-	panic("implement me")
+	responseKey, err := generateResponseKey()
+	if err != nil {
+		return false, fmt.Errorf("couldn't generate response key: %v", err)
+	}
+
+	redisTime, err := r.getRedisTime()
+	if err != nil {
+		return false, fmt.Errorf("couldn't get redis time: %v", err)
+	}
+	redisTime = redisTime.Add(r.timeout)
+
+	req := &protocol.Request{
+		RequestType:     protocol.Request_VERIFYPASSWORD,
+		ResponseKey:     responseKey,
+		Password:        encodePassword(password),
+		Hash:            hash,
+		ExpiryTimestamp: redisTime.UnixNano(),
+	}
+
+	res, err := r.submitRequestAndGetResponse(req)
+	if err != nil {
+		return false, err
+	}
+
+	return res.IsValid, nil
 }

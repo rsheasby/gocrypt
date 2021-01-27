@@ -83,3 +83,28 @@ func TestHashPassword(t *testing.T) {
 	assert.True(t, isValid, "Hash from remote password hasher should validate using the local hasher.")
 	assert.Nil(t, err, "No error should be returned when validating the hash. Invalid hash is likely the cause.")
 }
+
+func TestValidatePassword(t *testing.T) {
+	cost := 10
+	timeout := time.Second * 10
+	pool := &redis.Pool{
+		Dial: func() (redis.Conn, error) {
+			return redis.Dial("tcp", "localhost:6379", redis.DialUseTLS(true))
+		},
+	}
+
+	lph, _ := localPasswordHasher.New(cost)
+	rph, _ := New(cost, timeout, pool)
+
+	password := "password123!"
+	hash, _ := lph.HashPassword(password)
+
+	isValid, err := rph.ValidatePassword(password, hash)
+	assert.Nil(t, err, "Validate password returned an error")
+	assert.True(t, isValid, "Validate password didn't correctly validate")
+
+	invalidPassword := "Password123!"
+	isValid, err = rph.ValidatePassword(invalidPassword, hash)
+	assert.Nil(t, err, "Validate password returned an error")
+	assert.False(t, isValid, "Validate password didn't detect incorrect password")
+}
