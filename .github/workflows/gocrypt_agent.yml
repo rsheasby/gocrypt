@@ -20,7 +20,6 @@ jobs:
       with:
         go-version: 1.15
 
-
     - name: Test Dev
       run: make test
 
@@ -31,3 +30,14 @@ jobs:
       uses: golangci/golangci-lint-action@v2
       with:
         args: -E gosec -E gofmt --timeout 5m -v
+
+    - name: Build Dev
+      run: make build
+
+    - name: Build Release
+      run: make build-release
+      
+    - uses: actions/upload-artifact@v2
+      with:
+        name: gocrypt-agent
+        path: gocrypt
