@@ -7,8 +7,10 @@ on:
     branches: [ main ]
 
 jobs:
-
-  Test_gocrypt_agent:
+  test_gocrypt_agent:
+    defaults:
+      run:
+        working-directory: gocrypt/
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -22,7 +24,7 @@ jobs:
       run: make test
 
     - name: Test Release
-      run: make test-release
+      run: make test-coverage
       
     - name: Lint
       run: make lint
