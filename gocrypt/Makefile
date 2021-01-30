@@ -20,9 +20,6 @@ build:
 build-release:
 	go build $(RELEASE_BUILD_FLAGS) $(GLOBAL_BUILD_FLAGS)
 
-build-docker-release:
-	docker run --rm -v `pwd`:/app -w /app golang:latest make build-release
-
 build-image:
 	docker image build -t $(OUTPUT_FILE):`date -u +"%Y-%m-%d"`-`git rev-parse --short HEAD` .
 
