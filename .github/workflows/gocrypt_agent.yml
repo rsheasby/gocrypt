@@ -30,4 +30,4 @@ jobs:
     - name: Lint
       uses: golangci/golangci-lint-action@v2
       with:
-        working-directory: gocrypt/
+        args: -E gosec -E gofmt --timeout 5m -v
