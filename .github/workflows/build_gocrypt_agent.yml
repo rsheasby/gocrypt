@@ -1,4 +1,4 @@
-name: gocrypt agent
+name: build gocrypt agent
 
 on:
   push:
