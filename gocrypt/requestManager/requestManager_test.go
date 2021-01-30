@@ -73,6 +73,10 @@ func TestRequestManagerShouldRespectContextCancellation(t *testing.T) {
 func TestRequestManagerShouldReturnValidRequestsWhileLoggingErrors(t *testing.T) {
 	pool := redisHelpers.NewMockPool()
 	pool.Conn.Command("PING").Expect("PONG")
+	pool.Conn.Command("TIME").ExpectSlice(
+		time.Now().Unix(),
+		int64(time.Now().Nanosecond()),
+	)
 
 	req := &protocol.Request{
 		RequestType:     protocol.Request_HASHPASSWORD,
