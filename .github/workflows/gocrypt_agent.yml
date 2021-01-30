@@ -20,8 +20,6 @@ jobs:
       with:
         go-version: 1.15
 
-    - name: Setup linter
-      uses: golangci/golangci-lint-action@v2
 
     - name: Test Dev
       run: make test
@@ -30,4 +28,6 @@ jobs:
       run: make test-coverage
       
     - name: Lint
-      run: make lint
+      uses: golangci/golangci-lint-action@v2
+      with:
+        working-directory: gocrypt/
