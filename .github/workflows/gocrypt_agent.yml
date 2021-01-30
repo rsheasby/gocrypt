@@ -8,7 +8,7 @@ on:
 
 jobs:
 
-  Test gocrypt agent:
+  Test_gocrypt_agent:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
