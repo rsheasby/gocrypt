@@ -82,7 +82,7 @@ func (r RemotePasswordHasher) submitRequestAndGetResponse(req *protocol.Request)
 	if err != nil {
 		return nil, fmt.Errorf("failed to subscribe to res key: %v", err)
 	}
-	defer subConn.Unsubscribe()
+	defer subConn.Unsubscribe() //nolint
 
 	// Submit hash req
 	redisConn := r.pool.Get()

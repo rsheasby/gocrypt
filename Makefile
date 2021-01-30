@@ -1,8 +1,6 @@
-DEV_REDIS_HOST = "127.0.0.1:6379"
-
 DEV_BUILD_FLAGS =
 RELEASE_BUILD_FLAGS = -ldflags "-s -w" -tags release
-GLOBAL_BUILD_FLAGS = -o $(OUTPUT_FILE)
+GLOBAL_BUILD_FLAGS =
 
 TEST_FLAGS = -v -race -count=1
 TEST_TARGET = ./...
