@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  test_gocrypt_agent:
+  build_gocrypt_agent:
     defaults:
       run:
         working-directory: gocrypt/
