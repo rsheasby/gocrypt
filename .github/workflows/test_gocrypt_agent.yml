@@ -1,4 +1,4 @@
-name: build gocrypt agent
+name: test gocrypt agent
 
 on:
   push:
@@ -36,8 +36,3 @@ jobs:
 
     - name: Build Release
       run: make build-release
-      
-    - uses: actions/upload-artifact@v2
-      with:
-        name: gocrypt-agent
-        path: gocrypt/gocrypt
