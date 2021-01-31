@@ -17,6 +17,6 @@ jobs:
       with:
         name: gocrypt-agent
         
-    - name ls
+    - name: ls
       run: ls
     
