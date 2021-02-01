@@ -7,7 +7,6 @@ import (
 
 	"github.com/gomodule/redigo/redis"
 	"github.com/google/uuid"
-	"github.com/rsheasby/gocrypt"
 	"github.com/rsheasby/gocrypt/protocol"
 	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/protobuf/proto"
@@ -45,7 +44,7 @@ func testPoolConnection(pool *redis.Pool) (err error) {
 
 // New returns a PasswordHasher instance relying on a remote gocrypt agent to perform the
 // hashing. This validates the connection and cost, and returns an error if there is a problem.
-func New(cost int, timeout time.Duration, pool *redis.Pool) (ph gocrypt.PasswordHasher, err error) {
+func New(cost int, timeout time.Duration, pool *redis.Pool) (ph *RemotePasswordHasher, err error) {
 	if cost < bcrypt.MinCost || cost > bcrypt.MaxCost {
 		return nil, fmt.Errorf("cost of %d is invalid - cost must be between %d and %d", cost, bcrypt.MinCost, bcrypt.MaxCost)
 	}

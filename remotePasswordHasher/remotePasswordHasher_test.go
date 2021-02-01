@@ -2,6 +2,7 @@ package remotePasswordHasher
 
 import (
 	"fmt"
+	"os"
 	"testing"
 	"time"
 
@@ -11,8 +12,14 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+var useTLS bool
+
+func init() {
+	_, useTLS = os.LookupEnv("REDIS_TLS")
+}
+
 // The tests in this file are both unit tests and integration tests.
-// An active redis server on localhost:6379 using TLS is necessary, and a gocrypt agent needs to be running.
+// An active redis server on localhost:6379 is necessary, and a gocrypt agent needs to be running.
 // It also relies on the localPasswordHasher which serves as a reference implementation, so if that's broken,
 // these tests can't be relied on.
 
@@ -21,7 +28,7 @@ func TestNewRemotePasswordHasher(t *testing.T) {
 	timeout := time.Second * 10
 	pool := &redis.Pool{
 		Dial: func() (redis.Conn, error) {
-			return redis.Dial("tcp", "localhost:6379", redis.DialUseTLS(true))
+			return redis.Dial("tcp", "localhost:6379", redis.DialUseTLS(useTLS))
 		},
 	}
 	ph, err := New(cost, timeout, pool)
@@ -67,7 +74,7 @@ func TestHashPassword(t *testing.T) {
 	timeout := time.Second * 10
 	pool := &redis.Pool{
 		Dial: func() (redis.Conn, error) {
-			return redis.Dial("tcp", "localhost:6379", redis.DialUseTLS(true))
+			return redis.Dial("tcp", "localhost:6379", redis.DialUseTLS(useTLS))
 		},
 	}
 
@@ -89,7 +96,7 @@ func TestValidatePassword(t *testing.T) {
 	timeout := time.Second * 10
 	pool := &redis.Pool{
 		Dial: func() (redis.Conn, error) {
-			return redis.Dial("tcp", "localhost:6379", redis.DialUseTLS(true))
+			return redis.Dial("tcp", "localhost:6379", redis.DialUseTLS(useTLS))
 		},
 	}
 

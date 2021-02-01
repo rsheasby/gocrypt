@@ -4,22 +4,22 @@ import (
 	"crypto/sha512"
 	"fmt"
 
-	"github.com/rsheasby/gocrypt"
 	"golang.org/x/crypto/bcrypt"
 )
 
-type localPasswordHasher struct {
+type LocalPasswordHasher struct {
 	cost int
 }
 
-func New(cost int) (lph gocrypt.PasswordHasher, err error) {
+func New(cost int) (lph *LocalPasswordHasher, err error) {
 	if cost < bcrypt.MinCost || cost > bcrypt.MaxCost {
-		return gocrypt.PasswordHasher(nil), fmt.Errorf(`cost %d is invalid - cost must be between %d and %d`, cost, bcrypt.MinCost, bcrypt.MaxCost)
+		return nil, fmt.Errorf(`cost %d is invalid - cost must be between %d and %d`, cost, bcrypt.MinCost,
+			bcrypt.MaxCost)
 	}
-	return &localPasswordHasher{cost: cost}, nil
+	return &LocalPasswordHasher{cost: cost}, nil
 }
 
-func (l *localPasswordHasher) HashPassword(password string) (hash string, err error) {
+func (l *LocalPasswordHasher) HashPassword(password string) (hash string, err error) {
 	if len(password) == 0 {
 		return "", fmt.Errorf("password cannot be empty")
 	}
@@ -33,7 +33,7 @@ func (l *localPasswordHasher) HashPassword(password string) (hash string, err er
 	return string(hashBytes), nil
 }
 
-func (l *localPasswordHasher) ValidatePassword(password string, hash string) (isValid bool, err error) {
+func (l *LocalPasswordHasher) ValidatePassword(password string, hash string) (isValid bool, err error) {
 	if len(password) == 0 {
 		return false, fmt.Errorf("password cannot be empty")
 	}

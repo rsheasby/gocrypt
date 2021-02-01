@@ -44,6 +44,5 @@ fulltest: build build-release test test-release lint
 
 run:
 	REDIS_HOST=$(DEV_REDIS_HOST) \
-	REDIS_TLS= \
 	go run .
 
