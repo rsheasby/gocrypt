@@ -36,7 +36,7 @@ jobs:
     - name: Build and push
       uses: docker/build-push-action@v2
       with:
-        context: .
+        context: ~/work/gocrypt/gocrypt/gocrypt
         file: ./Dockerfile
         platforms: linux/amd64
         push: true
@@ -46,6 +46,7 @@ jobs:
       uses: zwaldowski/match-label-action@v1
       with:
         allowed: major,minor,patch
+
     - uses: zwaldowski/semver-release-action@v1
       with:
         bump: ${{ steps.bump.outputs.match }}
