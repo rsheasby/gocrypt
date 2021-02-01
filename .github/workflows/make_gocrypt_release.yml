@@ -35,6 +35,8 @@ jobs:
 
     - id: release
       uses: zwaldowski/semver-release-action@v1
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: true 
       with:
         bump: patch
         github_token: ${{ secrets.GITHUB_TOKEN }}
