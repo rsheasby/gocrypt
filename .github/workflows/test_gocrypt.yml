@@ -65,5 +65,7 @@ jobs:
         run: make test-release
 
       - name: Lint Client
-        run: make lint
+        uses: golangci/golangci-lint-action@v2
+        with:
+          args: -E gosec -E gofmt --timeout 5m -v
       
