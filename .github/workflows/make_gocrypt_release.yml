@@ -47,4 +47,6 @@ jobs:
         context: gocrypt/
         platforms: linux/amd64
         push: true
-        tags: rsheasby/gocrypt:latest rsheasby/gocrypt:${{ steps.release.outputs.version }}
+        tags: |
+          rsheasby/gocrypt:latest
+          rsheasby/gocrypt:${{ steps.release.outputs.version }}
