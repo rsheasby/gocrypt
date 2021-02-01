@@ -56,7 +56,7 @@ jobs:
         working-directory: gocrypt/
         env:
           REDIS_HOST: localhost:6379
-        run: ./gocrypt
+        run: ./gocrypt & disown
 
       - name: Test Dev Client
         run: make test
