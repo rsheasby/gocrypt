@@ -36,7 +36,7 @@ jobs:
     - name: Build and push
       uses: docker/build-push-action@v2
       with:
-        context: ~/work/gocrypt/gocrypt/gocrypt
+        context: /home/runner/work/gocrypt/gocrypt/gocrypt
         file: ./Dockerfile
         platforms: linux/amd64
         push: true
