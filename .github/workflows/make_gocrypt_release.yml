@@ -40,6 +40,7 @@ jobs:
       with:
         bump: patch
         github_token: ${{ secrets.GITHUB_TOKEN }}
+        prefix: v
     
     - name: Build and push
       uses: docker/build-push-action@v2
