@@ -13,56 +13,57 @@ jobs:
         working-directory: gocrypt/
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - name: Set up Go
-      uses: actions/setup-go@v2
-      with:
-        go-version: 1.15
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.15
 
-    - name: Test Dev
-      run: make test
+      - name: Test Dev
+        run: make test
 
-    - name: Test Release
-      run: make test-coverage
-      
-    - name: Lint
-      uses: golangci/golangci-lint-action@v2
-      with:
-        args: -E gosec -E gofmt --timeout 5m -v
+      - name: Test Release
+        run: make test-coverage
 
-    - name: Build Dev
-      run: make build
+      - name: Lint
+        uses: golangci/golangci-lint-action@v2
+        with:
+          args: -E gosec -E gofmt --timeout 5m -v
 
-    - name: Build Release
-      run: make build-release
+      - name: Build Dev
+        run: make build
+
+      - name: Build Release
+        run: make build-release
   
   test_gocrypt_client:
     runs-on: ubuntu-latest
     services:
       redis:
         image: redis:latest
-        ports: [6379]
+        ports: 
+          - 6379:6379
     
     steps:
-    - uses: actions/checkout@v2
-      
-    - name: Build Agent
-      working-directory: gocrypt/
-      run: make build-release
-      
-    - name: Run Agent
-      working-directory: gocrypt/
-      env:
-        REDIS_HOST: localhost:6379
-      run: ./gocrypt
-      
-    - name: Test Dev Client
-      run: make test
-      
-    - name: Test Release Client
-      run: make test-release
-    
-    - name: Lint Client
-      run: make lint
+      - uses: actions/checkout@v2
+
+      - name: Build Agent
+        working-directory: gocrypt/
+        run: make build-release
+
+      - name: Run Agent
+        working-directory: gocrypt/
+        env:
+          REDIS_HOST: localhost:6379
+        run: ./gocrypt
+
+      - name: Test Dev Client
+        run: make test
+
+      - name: Test Release Client
+        run: make test-release
+
+      - name: Lint Client
+        run: make lint
       
