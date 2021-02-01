@@ -40,7 +40,6 @@ jobs:
   test_gocrypt_client:
     defaults:
       run:
-        working-directory: gocrypt/
     runs-on: ubuntu-latest
     services:
       redis:
@@ -51,4 +50,21 @@ jobs:
     - uses: actions/checkout@v2
       
     - name: Build Agent
-      run: pwd && ls -la
+      working-directory: gocrypt/
+      run: make build-release
+      
+    - name: Run Agent
+      working-directory: gocrypt/
+      env:
+        REDIS_HOST: localhost:6379
+      run: ./gocrypt
+      
+    - name: Test Dev Client
+      run: make test
+      
+    - name: Test Release Client
+      run: make test-release
+    
+    - name: Lint Client
+      run: make lint
+      
