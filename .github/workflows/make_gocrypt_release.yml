@@ -33,11 +33,11 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    - name: Generate release
-      id: release
-      uses: home-furnishing-nordic/semver-release-manager@master
+    - id: release
+      uses: zwaldowski/semver-release-action@v1
       with:
-        github_token: "${{ secrets.GITHUB_TOKEN }}"
+        bump: patch
+        github_token: ${{ secrets.GITHUB_TOKEN }}
     
     - name: Build and push
       uses: docker/build-push-action@v2
@@ -45,4 +45,4 @@ jobs:
         context: gocrypt/
         platforms: linux/amd64
         push: true
-        tags: rsheasby/gocrypt:latest rsheasby/gocrypt:${{ steps.release.outputs.new_tag }}
+        tags: rsheasby/gocrypt:latest rsheasby/gocrypt:${{ steps.release.outputs.version }}
