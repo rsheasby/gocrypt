@@ -34,7 +34,7 @@ func main() {
 		},
 	}
 
-	// Open request manager. This exits the program if it's unable to connect to redis.
+	// Open request manager. This exits the program if it's unable to connect to redis, unless Durable mode is enabled.
 	requestChan, err := requestManager.Start(context.Background(), pool, logger)
 	if err != nil {
 		logger.Fatalf("Couldn't start up request manager: %v", err)

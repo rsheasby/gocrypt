@@ -39,6 +39,8 @@ var (
 	RedisTLS bool
 	// Threads specifies how many worker threads should be started.
 	Threads int
+	// Durable makes the service infinitely attempt retries whenever possible, instead of exiting on failures.
+	Durable = false
 )
 
 // ReadEnvironment gets the environment variables and initialises the config variables
@@ -57,6 +59,8 @@ func ReadEnvironment() {
 	if !RedisTLS {
 		log.Println("Warning: TLS not enabled. Remember to configure and use TLS for any production deployments!")
 	}
+
+	_, Durable = os.LookupEnv("DURABLE")
 
 	Threads = runtime.NumCPU()
 }

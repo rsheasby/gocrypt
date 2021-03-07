@@ -5,6 +5,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/rsheasby/gocrypt/gocrypt/config"
 	"github.com/rsheasby/gocrypt/gocrypt/redisHelpers"
 	"github.com/rsheasby/gocrypt/protocol"
 )
@@ -13,13 +14,16 @@ import (
 func Start(ctx context.Context, pool redisHelpers.ConnGetter, logger *log.Logger) (results chan *protocol.Request, err error) {
 	results = make(chan *protocol.Request, 1)
 
-	// Test redis connection before going into the request loop
-	conn := pool.Get()
-	_, err = conn.Do("PING")
-	if err != nil {
-		return nil, err
+	if !config.Durable {
+		// Test redis connection before going into the request loop
+		conn := pool.Get()
+		defer conn.Close()
+		_, err = conn.Do("PING")
+		if err != nil {
+			return nil, err
+		}
+		_ = conn.Close()
 	}
-	_ = conn.Close()
 
 	go func() {
 		for {
