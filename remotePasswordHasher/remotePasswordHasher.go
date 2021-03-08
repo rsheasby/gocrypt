@@ -49,7 +49,7 @@ func testPoolConnection(pool redisPool) (err error) {
 
 // New returns a PasswordHasher instance relying on a remote gocrypt agent to perform the
 // hashing. This validates the connection and cost, and returns an error if there is a problem.
-func New(cost int, timeout time.Duration, pool *redis.Pool) (ph *RemotePasswordHasher, err error) {
+func New(cost int, timeout time.Duration, pool redisPool) (ph *RemotePasswordHasher, err error) {
 	if cost < bcrypt.MinCost || cost > bcrypt.MaxCost {
 		return nil, fmt.Errorf("cost of %d is invalid - cost must be between %d and %d", cost, bcrypt.MinCost, bcrypt.MaxCost)
 	}
