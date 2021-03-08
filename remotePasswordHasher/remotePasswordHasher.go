@@ -24,7 +24,7 @@ type RemotePasswordHasher struct {
 	pool    redisPool
 }
 
-func testPoolConnection(pool *redis.Pool) (err error) {
+func testPoolConnection(pool redisPool) (err error) {
 	if pool == nil {
 		return fmt.Errorf("redis pool cannot be nil")
 	}
