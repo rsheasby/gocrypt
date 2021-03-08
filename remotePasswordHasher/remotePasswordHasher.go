@@ -12,11 +12,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+type redisPool interface {
+	Get() redis.Conn
+	Close() error
+}
+
 // RemotePasswordHasher performs
 type RemotePasswordHasher struct {
 	cost    int
 	timeout time.Duration
-	pool    *redis.Pool
+	pool    redisPool
 }
 
 func testPoolConnection(pool *redis.Pool) (err error) {
