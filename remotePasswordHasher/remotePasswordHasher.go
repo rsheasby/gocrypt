@@ -12,19 +12,20 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-type redisPool interface {
+// RedisPool represents a generic, mockable redigo pool.
+type RedisPool interface {
 	Get() redis.Conn
 	Close() error
 }
 
-// RemotePasswordHasher performs
+// RemotePasswordHasher performs password hashing using a remote gocrypt hashing agent accessible through the provided redis pool.
 type RemotePasswordHasher struct {
 	cost    int
 	timeout time.Duration
-	pool    redisPool
+	pool    RedisPool
 }
 
-func testPoolConnection(pool redisPool) (err error) {
+func testPoolConnection(pool RedisPool) (err error) {
 	if pool == nil {
 		return fmt.Errorf("redis pool cannot be nil")
 	}
@@ -49,7 +50,7 @@ func testPoolConnection(pool redisPool) (err error) {
 
 // New returns a PasswordHasher instance relying on a remote gocrypt agent to perform the
 // hashing. This validates the connection and cost, and returns an error if there is a problem.
-func New(cost int, timeout time.Duration, pool redisPool) (ph *RemotePasswordHasher, err error) {
+func New(cost int, timeout time.Duration, pool RedisPool) (ph *RemotePasswordHasher, err error) {
 	if cost < bcrypt.MinCost || cost > bcrypt.MaxCost {
 		return nil, fmt.Errorf("cost of %d is invalid - cost must be between %d and %d", cost, bcrypt.MinCost, bcrypt.MaxCost)
 	}
@@ -138,6 +139,7 @@ func (r RemotePasswordHasher) getRedisTime() (redisTime time.Time, err error) {
 	return time.Unix(timestamps[0], timestamps[1]), nil
 }
 
+// HashPassword hashes the provided password using a remote gocrypt agent.
 func (r RemotePasswordHasher) HashPassword(password string) (hash string, err error) {
 	responseKey, err := generateResponseKey()
 	if err != nil {
@@ -166,6 +168,7 @@ func (r RemotePasswordHasher) HashPassword(password string) (hash string, err er
 	return res.Hash, nil
 }
 
+// ValidatePassword validates the password against the provided password hash using a remote gocrypt agent.
 func (r RemotePasswordHasher) ValidatePassword(password string, hash string) (isValid bool, err error) {
 	responseKey, err := generateResponseKey()
 	if err != nil {

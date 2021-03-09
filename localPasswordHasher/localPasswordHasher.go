@@ -7,10 +7,12 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// LocalPasswordHasher performs password hashing locally, without requiring a remote gocrypt agent.
 type LocalPasswordHasher struct {
 	cost int
 }
 
+// New creates a new LocalPasswordHasher instance. This fails if the cost is not within acceptable bounds.
 func New(cost int) (lph *LocalPasswordHasher, err error) {
 	if cost < bcrypt.MinCost || cost > bcrypt.MaxCost {
 		return nil, fmt.Errorf(`cost %d is invalid - cost must be between %d and %d`, cost, bcrypt.MinCost,
@@ -19,6 +21,7 @@ func New(cost int) (lph *LocalPasswordHasher, err error) {
 	return &LocalPasswordHasher{cost: cost}, nil
 }
 
+// HashPassword hashes the provided password locally.
 func (l *LocalPasswordHasher) HashPassword(password string) (hash string, err error) {
 	if len(password) == 0 {
 		return "", fmt.Errorf("password cannot be empty")
@@ -33,6 +36,7 @@ func (l *LocalPasswordHasher) HashPassword(password string) (hash string, err er
 	return string(hashBytes), nil
 }
 
+// ValidatePassword validates the password against the provided password hash.
 func (l *LocalPasswordHasher) ValidatePassword(password string, hash string) (isValid bool, err error) {
 	if len(password) == 0 {
 		return false, fmt.Errorf("password cannot be empty")
