@@ -30,7 +30,12 @@ func main() {
 		MaxIdle:     config.Threads + 1,
 		IdleTimeout: config.ConnectionTimeout,
 		Dial: func() (redis.Conn, error) {
-			return redis.Dial("tcp", config.RedisHost, redis.DialUseTLS(config.RedisTLS))
+			return redis.Dial("tcp",
+				config.RedisHost,
+				redis.DialUseTLS(config.RedisTLS),
+				redis.DialUsername(config.RedisUsername),
+				redis.DialPassword(config.RedisPassword),
+				)
 		},
 	}
 

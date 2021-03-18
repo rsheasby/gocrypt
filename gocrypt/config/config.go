@@ -37,6 +37,10 @@ var (
 	RedisHost string
 	// RedisTLS specifies if the redis connection should use TLS.
 	RedisTLS bool
+	// RedisUsername specifies the username to use for redis auth.
+	RedisUsername            string
+	// RedisPassword specifies the password to use for redis auth.
+	RedisPassword            string
 	// Threads specifies how many worker threads should be started.
 	Threads int
 	// Durable makes the service infinitely attempt retries whenever possible, instead of exiting on failures.
@@ -59,6 +63,14 @@ func ReadEnvironment() {
 	if !RedisTLS {
 		log.Println("Warning: TLS not enabled. Remember to configure and use TLS for any production deployments!")
 	}
+
+	RedisUsername = os.Getenv("REDIS_USERNAME")
+	if RedisUsername == "" {
+		log.Println("Warning: Redis authentication not enabled. " +
+			"Remember to configure and use auth for any production deployments!")
+	}
+
+	RedisPassword = os.Getenv("REDIS_PASSWORD")
 
 	_, Durable = os.LookupEnv("DURABLE")
 
