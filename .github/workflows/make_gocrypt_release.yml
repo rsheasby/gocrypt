@@ -8,7 +8,7 @@ jobs:
   make_gocrypt_release:
     defaults:
       run:
-        working-directory: gocrypt/
+        working-directory: cmd/gocrypt/
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -45,7 +45,7 @@ jobs:
     - name: Build and push
       uses: docker/build-push-action@v2
       with:
-        context: gocrypt/
+        context: cmd/gocrypt/
         platforms: linux/amd64
         push: true
         tags: |

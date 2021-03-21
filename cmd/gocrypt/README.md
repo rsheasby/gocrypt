@@ -1,7 +1,13 @@
 # gocrypt Agent
 This is the service that performs all the password hashing on behalf of the client library.
 
-## Setup
+## Production Setup
+For running gocrypt in production, the [docker image](https://hub.docker.com/repository/docker/rsheasby/gocrypt) is probably the best bet.
+
+If you prefer to run the service directly, follow the instructions in the [main readme](https://github.
+com/rsheasby/gocrypt/blob/main/README.md) to install and configure the gocrypt agent. 
+
+## Dev Setup
 Firstly, you need a redis host running. You can do this locally like so:
 
 ```bash

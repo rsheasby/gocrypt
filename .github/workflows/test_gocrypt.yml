@@ -10,7 +10,7 @@ jobs:
   build_gocrypt_agent:
     defaults:
       run:
-        working-directory: gocrypt/
+        working-directory: cmd/gocrypt/
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -49,11 +49,11 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Build Agent
-        working-directory: gocrypt/
+        working-directory: cmd/gocrypt/
         run: make build-release
 
       - name: Run Agent
-        working-directory: gocrypt/
+        working-directory: cmd/gocrypt/
         env:
           REDIS_HOST: localhost:6379
         run: ./gocrypt & disown

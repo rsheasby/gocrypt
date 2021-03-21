@@ -12,4 +12,4 @@ require (
 	google.golang.org/protobuf v1.25.0
 )
 
-replace github.com/rsheasby/gocrypt => ../
+replace github.com/rsheasby/gocrypt => ../../
