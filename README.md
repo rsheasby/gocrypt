@@ -1,6 +1,7 @@
 # gocrypt
-Opinionated Go library for scalable, secure password hashing
 [![Go Reference](https://pkg.go.dev/badge/github.com/rsheasby/gocrypt.svg)](https://pkg.go.dev/github.com/rsheasby/gocrypt)
+
+Opinionated Go library for scalable, secure password hashing
 
 ## How do I use it?
 Firstly, you'll need a Redis server running. Assuming that's sorted, there's just 2 steps to start using gocrypt.
