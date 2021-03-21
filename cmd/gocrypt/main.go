@@ -35,7 +35,7 @@ func main() {
 				redis.DialUseTLS(config.RedisTLS),
 				redis.DialUsername(config.RedisUsername),
 				redis.DialPassword(config.RedisPassword),
-				)
+			)
 		},
 	}
 
